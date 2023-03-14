@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getQuizDetails } from "../services/quiz_service";
 import QuestionCard from '../Components/QuestionCard';
 import Button from "@material-ui/core/Button";
+import { getCookie, setCookie } from '../../Functions/cookieFunction';
 
 function QuizApp() {
 
@@ -9,14 +10,14 @@ function QuizApp() {
   let [currentStep, setCurrentStep] = useState(0)
   let [score, setScore] = useState(0)
   let [showResult, setShowResult] = useState(false)
-  const [store,setStore] = useState([])
+  const [store, setStore] = useState([])
 
-  
+
   useEffect(() => {
-    console.log("score=>",score)
-    console.log("store=>",store)
+    console.log("score=>", score)
+    console.log("store=>", store)
   }, [score])
-  
+
   useEffect(() => {
     async function fetchData() {
       const questions = await getQuizDetails(5, 'easy');
@@ -25,10 +26,10 @@ function QuizApp() {
     fetchData();
   }, []);
 
-  
-  
-  
-  const handleUpdateScore = async (userAns, questionNo, type) => {    
+
+
+
+  const handleUpdateScore = async (userAns, questionNo, type) => {
     const currentQuestion = await quiz[questionNo];
     // console.log(userAns, currentQuestion)
     // console.log("correct And: " + currentQuestion.correct_answer + "--user Selection:" + userAns)
@@ -40,46 +41,51 @@ function QuizApp() {
       })
       console.log(checkCode)
       let hasInclude = store.includes(currentQuestion.correct_answer)
-      console.log("hasInclude",hasInclude)
-      if(hasInclude){
+      console.log("hasInclude", hasInclude)
+      if (hasInclude) {
         setScore(--score);
         const arr = [...store]
         const res = arr.filter(element => element !== currentQuestion.correct_answer);
-        console.log("52",res)
+        console.log("52", res)
         setStore(res)
 
-      }else{
+      } else {
         if (checkCode === currentQuestion.correct_answer) {
           setScore(++score);
-          setStore([...store,currentQuestion.correct_answer])
-    
+          setStore([...store, currentQuestion.correct_answer])
+
         }
       }
-     
-      
+
+
     } else if (type === "radio") {
       let hasInclude = store.includes(currentQuestion.correct_answer)
-      console.log("hasInclude",hasInclude)
-      if(hasInclude){
+      console.log("hasInclude", hasInclude)
+      if (hasInclude) {
         setScore(--score);
         const arr = [...store]
         const res = arr.filter(element => element !== currentQuestion.correct_answer);
         setStore(res)
 
-      }else{
+      } else {
         if (userAns === currentQuestion.correct_answer) {
           setScore(++score);
-          setStore([...store,currentQuestion.correct_answer])
-    
+          setStore([...store, currentQuestion.correct_answer])
+
         }
       }
-      
+
     }
 
   }
 
 
+  const handleRedirect = () => {
+    setCookie("micro-service-quiz-app", true, 30)
+    let shop_url = getCookie("redirect")
+    window.location.replace(shop_url)
 
+  }
 
   if (!quiz.length)
     return <h3>Loading.. </h3>
@@ -92,6 +98,7 @@ function QuizApp() {
         You final score is
         <b> {score}</b> out of <b>{quiz.length}</b>
       </p>
+      <Button color="secondary" variant="contained" onClick={handleRedirect}>Lets Go for shopping</Button>
     </div>)
   }
   return (
@@ -110,7 +117,7 @@ function QuizApp() {
           />
         )
       })}
-      <Button color="secondary" variant="contained" onClick={()=>setShowResult(true)} className="submit mt-5">submit</Button>
+      <Button color="secondary" variant="contained" onClick={() => setShowResult(true)} className="submit mt-5">submit</Button>
     </div>
   );
 }

@@ -30,6 +30,7 @@ export default function ButtonAppBar() {
     var auth_url_logout = `${process.env.REACT_APP_AUTH_URL_LOGOUT}`
     console.log(auth_url_logout)
     window.location.replace(auth_url_logout);
+    setCookie(`redirect`, shop_url);
 
   };
   useEffect(() => {
